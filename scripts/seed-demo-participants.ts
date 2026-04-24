@@ -1,5 +1,7 @@
 import dotenv from 'dotenv';
 import { createClient } from '@supabase/supabase-js';
+import { QUESTIONS } from '../lib/questions';
+import { calculateScore, calculateMaxScore, classify, applyKnockout } from '../lib/scoring';
 
 dotenv.config({ path: '.env.local' });
 
@@ -61,11 +63,6 @@ const AVANCE_ANSWERS_2: Record<string, string[]> = {
 };
 
 type AnswerSet = Record<string, string[]>;
-
-const QUESTIONS_DATA = await import('../lib/questions');
-const SCORING_DATA = await import('../lib/scoring');
-const { QUESTIONS } = QUESTIONS_DATA;
-const { calculateScore, calculateMaxScore, classify, applyKnockout } = SCORING_DATA;
 
 const MAX_SCORE = calculateMaxScore(QUESTIONS);
 
@@ -132,7 +129,7 @@ async function seedComplete() {
       p_total_score:  score,
       p_max_score:    MAX_SCORE,
       p_level:        level,
-      p_responses:    JSON.stringify(responses),
+      p_responses:    responses,
     });
 
     if (error) {
@@ -169,9 +166,13 @@ async function seedIncomplete() {
   return ok;
 }
 
-console.log('Seed participants HPSJ…\n');
-console.log(`Complets (${COMPLETE_PARTICIPANTS.length}) :`);
-const c = await seedComplete();
-console.log(`\nIncomplets (${INCOMPLETE_PARTICIPANTS.length}) :`);
-const i = await seedIncomplete();
-console.log(`\nTerminé : ${c}/${COMPLETE_PARTICIPANTS.length} complets, ${i}/${INCOMPLETE_PARTICIPANTS.length} incomplets.`);
+async function main() {
+  console.log('Seed participants HPSJ…\n');
+  console.log(`Complets (${COMPLETE_PARTICIPANTS.length}) :`);
+  const c = await seedComplete();
+  console.log(`\nIncomplets (${INCOMPLETE_PARTICIPANTS.length}) :`);
+  const i = await seedIncomplete();
+  console.log(`\nTerminé : ${c}/${COMPLETE_PARTICIPANTS.length} complets, ${i}/${INCOMPLETE_PARTICIPANTS.length} incomplets.`);
+}
+
+main().catch((err) => { console.error(err); process.exit(1); });

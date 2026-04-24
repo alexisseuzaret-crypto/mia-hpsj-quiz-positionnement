@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
       p_total_score:  score,
       p_max_score:    maxScore,
       p_level:        level,
-      p_responses:    JSON.stringify(responses),
+      p_responses:    responses,
     });
 
     if (rpcError) {
