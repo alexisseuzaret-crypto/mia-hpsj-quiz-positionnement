@@ -12,6 +12,7 @@ type Identity = {
   last_name: string;
   email: string;
   service: string | null;
+  training_format: 'presentiel' | 'distanciel' | 'indifferent' | null;
 };
 
 type State = {

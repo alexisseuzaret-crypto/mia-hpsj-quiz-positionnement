@@ -8,7 +8,8 @@ const identitySchema = z.object({
   first_name: z.string().trim().min(1).max(100),
   last_name:  z.string().trim().min(1).max(100),
   email:      z.string().email().max(254),
-  service:    z.string().max(100).nullable().optional(),
+  service:         z.string().max(100).nullable().optional(),
+  training_format: z.enum(['presentiel', 'distanciel', 'indifferent']).nullable().optional(),
 });
 
 const bodySchema = z.object({
@@ -52,7 +53,8 @@ export async function POST(request: NextRequest) {
       p_total_score:  score,
       p_max_score:    maxScore,
       p_level:        level,
-      p_responses:    responses,
+      p_responses:        responses,
+      p_training_format:  identity.training_format ?? null,
     });
 
     if (rpcError) {

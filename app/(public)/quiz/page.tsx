@@ -10,29 +10,16 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-
-const SERVICES = [
-  { value: 'Direction générale', label: 'Direction générale' },
-  { value: 'DSN', label: 'DSN' },
-  { value: 'RH', label: 'RH' },
-  { value: 'Qualité', label: 'Qualité' },
-  { value: 'Assistantes de direction', label: 'Assistantes de direction' },
-  { value: 'Service international', label: 'Service international' },
-  { value: 'Autre', label: 'Autre' },
-] as const;
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 
 const schema = z.object({
   firstName: z.string().trim().min(1, 'Prénom requis').max(100),
   lastName: z.string().trim().min(1, 'Nom requis').max(100),
   email: z.string().email('Email invalide').max(254, 'Email trop long'),
-  service: z.string().optional(),
+  service: z.string().trim().max(100).optional(),
+  trainingFormat: z.enum(['presentiel', 'distanciel', 'indifferent'], {
+    error: 'Veuillez choisir un format',
+  }),
   rgpdConsent: z
     .boolean()
     .refine((val) => val === true, 'Le consentement est requis pour continuer'),
@@ -93,9 +80,11 @@ export default function QuizPage() {
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
         email: data.email.toLowerCase().trim(),
-        service: data.service ?? null,
+        service: data.service?.trim() || null,
+        training_format: data.trainingFormat,
       })
     );
+    sessionStorage.setItem('training_format', data.trainingFormat);
     router.push('/quiz/questions');
   };
 
@@ -181,28 +170,56 @@ export default function QuizPage() {
 
           {/* Service */}
           <div className="space-y-1">
-            <Label htmlFor="service">Service (optionnel)</Label>
+            <Label htmlFor="service">Service ou direction</Label>
+            <Input
+              id="service"
+              maxLength={100}
+              placeholder="Ex : Cardiologie, Pharmacie, RH, Direction des soins…"
+              aria-label="Service ou direction"
+              {...register('service')}
+            />
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Optionnel — précisez votre service pour faciliter l&apos;organisation des groupes.
+            </p>
+          </div>
+
+          {/* Format de formation préféré */}
+          <div className="space-y-2">
+            <Label>Format de formation préféré *</Label>
             <Controller
               control={control}
-              name="service"
+              name="trainingFormat"
               render={({ field }) => (
-                <Select
+                <RadioGroup
                   value={field.value ?? ''}
-                  onValueChange={(val) => field.onChange(val || undefined)}
+                  onValueChange={field.onChange}
+                  className="flex flex-col gap-2"
+                  aria-invalid={!!errors.trainingFormat}
+                  aria-describedby={errors.trainingFormat ? 'trainingFormat-error' : undefined}
                 >
-                  <SelectTrigger id="service" aria-label="Service">
-                    <SelectValue placeholder="Sélectionnez votre service (optionnel)" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {SERVICES.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>
+                  {[
+                    { value: 'presentiel', label: 'Présentiel' },
+                    { value: 'distanciel', label: 'Distanciel' },
+                    { value: 'indifferent', label: 'Indifférent' },
+                  ].map(({ value, label }) => (
+                    <div key={value} className="flex items-center gap-2">
+                      <RadioGroupItem value={value} id={`format-${value}`} />
+                      <Label htmlFor={`format-${value}`} className="font-normal cursor-pointer">
                         {label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                      </Label>
+                    </div>
+                  ))}
+                </RadioGroup>
               )}
             />
+            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Cela nous permettra d&apos;organiser les sessions selon vos disponibilités.
+            </p>
+            {errors.trainingFormat && (
+              <p id="trainingFormat-error" role="alert" className="text-xs" style={{ color: '#EF4444' }}>
+                {errors.trainingFormat.message}
+              </p>
+            )}
           </div>
 
           {/* Consentement RGPD */}

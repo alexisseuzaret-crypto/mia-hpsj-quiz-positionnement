@@ -10,7 +10,7 @@ import {
 
 export type Filters = {
   level: string;
-  service: string;
+  format: string;
 };
 
 const LEVELS = [
@@ -18,16 +18,6 @@ const LEVELS = [
   { value: 'debutant', label: 'Débutant' },
   { value: 'intermediaire', label: 'Intermédiaire' },
   { value: 'avance', label: 'Avancé' },
-];
-
-const SERVICES = [
-  'Direction générale',
-  'DSN',
-  'RH',
-  'Qualité',
-  'Assistantes de direction',
-  'Service international',
-  'Autre',
 ];
 
 type Props = {
@@ -57,19 +47,15 @@ export default function AdminFilters({ filters, onChange, total, filtered }: Pro
       </Select>
 
       <Select
-        value={filters.service}
-        onValueChange={(val) => val && onChange({ ...filters, service: val })}
+        value={filters.format}
+        onValueChange={(val) => val && onChange({ ...filters, format: val })}
       >
-        <SelectTrigger className="w-52">
-          <SelectValue />
-        </SelectTrigger>
+        <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
         <SelectContent>
-          <SelectItem value="all">Tous les services</SelectItem>
-          {SERVICES.map((s) => (
-            <SelectItem key={s} value={s}>
-              {s}
-            </SelectItem>
-          ))}
+          <SelectItem value="all">Tous les formats</SelectItem>
+          <SelectItem value="presentiel">Présentiel</SelectItem>
+          <SelectItem value="distanciel">Distanciel</SelectItem>
+          <SelectItem value="indifferent">Indifférent</SelectItem>
         </SelectContent>
       </Select>
 

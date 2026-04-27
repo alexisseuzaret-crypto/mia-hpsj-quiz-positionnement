@@ -8,6 +8,12 @@ const LEVEL_LABEL: Record<string, string> = {
   avance: 'Avancé',
 };
 
+const FORMAT_LABEL: Record<string, string> = {
+  presentiel: 'Présentiel',
+  distanciel: 'Distanciel',
+  indifferent: 'Indifférent',
+};
+
 function csvEscape(value: string | null | undefined): string {
   const s = String(value ?? '');
   if (s.includes(';') || s.includes('"') || s.includes('\n')) {
@@ -27,7 +33,7 @@ export async function GET() {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from('participants')
-    .select('first_name, last_name, email, service, level, total_score, max_score, completed_at')
+    .select('first_name, last_name, email, service, training_format, level, total_score, max_score, completed_at')
     .not('completed_at', 'is', null)
     .order('completed_at', { ascending: false });
 
@@ -38,7 +44,7 @@ export async function GET() {
   const BOM = '﻿';
   const SEP = ';';
 
-  const header = ['Prénom', 'Nom', 'Email', 'Service', 'Niveau', 'Score', 'Score max', 'Pourcentage', 'Date'].join(SEP);
+  const header = ['Prénom', 'Nom', 'Email', 'Service', 'Format préféré', 'Niveau', 'Score', 'Score max', 'Pourcentage', 'Date'].join(SEP);
 
   const rows = (data ?? []).map((p) => {
     const pct = Math.round((p.total_score / p.max_score) * 100);
@@ -54,6 +60,7 @@ export async function GET() {
       csvEscape(p.last_name),
       csvEscape(p.email),
       csvEscape(p.service),
+      csvEscape(p.training_format ? FORMAT_LABEL[p.training_format] ?? '' : ''),
       csvEscape(LEVEL_LABEL[p.level]),
       String(p.total_score),
       String(p.max_score),

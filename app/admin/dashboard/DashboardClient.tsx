@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import AdminFilters, { type Filters } from '@/components/AdminFilters';
 import AdminTable, { type Participant } from '@/components/AdminTable';
 import { Button } from '@/components/ui/button';
@@ -12,11 +13,11 @@ type Props = {
 
 export default function DashboardClient({ participants }: Props) {
   const router = useRouter();
-  const [filters, setFilters] = useState<Filters>({ level: 'all', service: 'all' });
+  const [filters, setFilters] = useState<Filters>({ level: 'all', format: 'all' });
 
   const filtered = participants.filter((p) => {
     if (filters.level !== 'all' && p.level !== filters.level) return false;
-    if (filters.service !== 'all' && p.service !== filters.service) return false;
+    if (filters.format !== 'all' && p.training_format !== filters.format) return false;
     return true;
   });
 
@@ -41,6 +42,13 @@ export default function DashboardClient({ participants }: Props) {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <Link
+              href="/admin/stats"
+              className="text-sm px-3 py-1.5 rounded-lg border cursor-pointer"
+              style={{ borderColor: 'var(--surface)', color: 'var(--text)' }}
+            >
+              Statistiques →
+            </Link>
             <a
               href="/api/admin/export"
               className="text-sm px-3 py-1.5 rounded-lg border cursor-pointer"

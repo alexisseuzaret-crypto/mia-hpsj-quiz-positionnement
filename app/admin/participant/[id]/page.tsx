@@ -4,6 +4,13 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createSupabaseAdmin } from '@/lib/supabase-server';
 import { QUESTIONS } from '@/lib/questions';
+import DeleteParticipantButton from './DeleteParticipantButton';
+
+const FORMAT_LABEL: Record<string, string> = {
+  presentiel: 'Présentiel',
+  distanciel: 'Distanciel',
+  indifferent: 'Indifférent',
+};
 
 const LEVEL_LABEL: Record<string, string> = {
   debutant: 'Débutant',
@@ -35,7 +42,7 @@ export default async function ParticipantPage({ params }: Props) {
   const [{ data: participant }, { data: responses }] = await Promise.all([
     supabase
       .from('participants')
-      .select('id, first_name, last_name, email, service, level, total_score, max_score, completed_at')
+      .select('id, first_name, last_name, email, service, training_format, level, total_score, max_score, completed_at')
       .eq('id', id)
       .maybeSingle(),
     supabase
@@ -94,6 +101,11 @@ export default async function ParticipantPage({ params }: Props) {
               {participant.service && (
                 <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
                   {participant.service}
+                </p>
+              )}
+              {participant.training_format && (
+                <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  Format préféré : {FORMAT_LABEL[participant.training_format]}
                 </p>
               )}
             </div>
@@ -171,6 +183,19 @@ export default async function ParticipantPage({ params }: Props) {
               </div>
             );
           })}
+        </div>
+
+        {/* Suppression */}
+        <div
+          className="rounded-2xl p-6"
+          style={{ background: 'var(--background)', boxShadow: '0 2px 16px 0 rgba(26,32,61,0.08)' }}
+        >
+          <DeleteParticipantButton
+            id={participant.id}
+            firstName={participant.first_name}
+            lastName={participant.last_name}
+            email={participant.email}
+          />
         </div>
       </div>
     </div>

@@ -82,36 +82,48 @@ function scoreAndLevel(answers: AnswerSet) {
   return { score, level };
 }
 
-const SERVICES = [
-  'Direction générale', 'DSN', 'RH', 'Qualité',
-  'Assistantes de direction', 'Service international', 'Autre',
+const HOSPITAL_SERVICES = [
+  'Cardiologie', 'Pharmacie', 'Direction des soins', 'Bloc opératoire',
+  'Réanimation', 'Urgences', 'Pédiatrie', 'Imagerie médicale',
+  'Laboratoire', 'Administration', 'Communication', 'Qualité et risques',
+  'Service technique', 'Restauration', 'Médecine interne', 'Gériatrie',
+  'Psychiatrie', 'Maternité', 'Anesthésie', 'Hématologie',
 ];
 
-const COMPLETE_PARTICIPANTS = [
+type CompleteParticipant = {
+  first_name: string;
+  last_name: string;
+  email: string;
+  service: string;
+  training_format: 'presentiel' | 'distanciel' | 'indifferent';
+  answers: AnswerSet;
+};
+
+const COMPLETE_PARTICIPANTS: CompleteParticipant[] = [
   // Débutants (5)
-  { first_name: 'Marie', last_name: 'Leblanc',    email: 'marie.leblanc@hpsj.fr',     service: 'RH',                    answers: DEBUTANT_ANSWERS },
-  { first_name: 'Thomas', last_name: 'Moreau',    email: 'thomas.moreau@hpsj.fr',     service: 'Direction générale',    answers: DEBUTANT_ANSWERS_2 },
-  { first_name: 'Sophie', last_name: 'Girard',    email: 'sophie.girard@hpsj.fr',     service: 'Assistantes de direction', answers: DEBUTANT_ANSWERS },
-  { first_name: 'Lucas',  last_name: 'Bernard',   email: 'lucas.bernard@hpsj.fr',     service: 'Qualité',               answers: DEBUTANT_ANSWERS_2 },
-  { first_name: 'Emma',   last_name: 'Petit',     email: 'emma.petit@hpsj.fr',        service: 'Autre',                 answers: DEBUTANT_ANSWERS },
+  { first_name: 'Marie', last_name: 'Leblanc',    email: 'marie.leblanc@hpsj.fr',     service: 'Pédiatrie',          training_format: 'presentiel',  answers: DEBUTANT_ANSWERS },
+  { first_name: 'Thomas', last_name: 'Moreau',    email: 'thomas.moreau@hpsj.fr',     service: 'Direction des soins', training_format: 'distanciel',  answers: DEBUTANT_ANSWERS_2 },
+  { first_name: 'Sophie', last_name: 'Girard',    email: 'sophie.girard@hpsj.fr',     service: 'Maternité',         training_format: 'presentiel',  answers: DEBUTANT_ANSWERS },
+  { first_name: 'Lucas',  last_name: 'Bernard',   email: 'lucas.bernard@hpsj.fr',     service: 'Qualité et risques', training_format: 'presentiel',  answers: DEBUTANT_ANSWERS_2 },
+  { first_name: 'Emma',   last_name: 'Petit',     email: 'emma.petit@hpsj.fr',        service: 'Administration',     training_format: 'indifferent', answers: DEBUTANT_ANSWERS },
   // Intermédiaires (5)
-  { first_name: 'Antoine', last_name: 'Dupont',   email: 'antoine.dupont@hpsj.fr',    service: 'DSN',                   answers: INTER_ANSWERS },
-  { first_name: 'Claire',  last_name: 'Martin',   email: 'claire.martin@hpsj.fr',     service: 'RH',                    answers: INTER_ANSWERS_2 },
-  { first_name: 'Nicolas', last_name: 'Rousseau', email: 'nicolas.rousseau@hpsj.fr',  service: 'Service international', answers: INTER_ANSWERS },
-  { first_name: 'Julie',   last_name: 'Fontaine', email: 'julie.fontaine@hpsj.fr',    service: 'Qualité',               answers: INTER_ANSWERS_2 },
-  { first_name: 'Pierre',  last_name: 'Garnier',  email: 'pierre.garnier@hpsj.fr',    service: 'Direction générale',    answers: INTER_ANSWERS },
+  { first_name: 'Antoine', last_name: 'Dupont',   email: 'antoine.dupont@hpsj.fr',    service: 'Urgences',            training_format: 'presentiel',  answers: INTER_ANSWERS },
+  { first_name: 'Claire',  last_name: 'Martin',   email: 'claire.martin@hpsj.fr',     service: 'Pharmacie',          training_format: 'presentiel',  answers: INTER_ANSWERS_2 },
+  { first_name: 'Nicolas', last_name: 'Rousseau', email: 'nicolas.rousseau@hpsj.fr',  service: 'Réanimation',        training_format: 'distanciel',  answers: INTER_ANSWERS },
+  { first_name: 'Julie',   last_name: 'Fontaine', email: 'julie.fontaine@hpsj.fr',    service: 'Cardiologie',        training_format: 'presentiel',  answers: INTER_ANSWERS_2 },
+  { first_name: 'Pierre',  last_name: 'Garnier',  email: 'pierre.garnier@hpsj.fr',    service: 'Bloc opératoire',    training_format: 'presentiel',  answers: INTER_ANSWERS },
   // Avancés (5)
-  { first_name: 'Isabelle', last_name: 'Chevalier', email: 'isabelle.chevalier@hpsj.fr', service: 'DSN',                answers: AVANCE_ANSWERS },
-  { first_name: 'Mathieu',  last_name: 'Simon',     email: 'mathieu.simon@hpsj.fr',      service: 'Direction générale', answers: AVANCE_ANSWERS_2 },
-  { first_name: 'Camille',  last_name: 'Laurent',   email: 'camille.laurent@hpsj.fr',    service: 'RH',                 answers: AVANCE_ANSWERS },
-  { first_name: 'Romain',   last_name: 'Michel',    email: 'romain.michel@hpsj.fr',      service: 'Service international', answers: AVANCE_ANSWERS_2 },
-  { first_name: 'Lucie',    last_name: 'Lefevre',   email: 'lucie.lefevre@hpsj.fr',      service: 'Qualité',            answers: AVANCE_ANSWERS },
+  { first_name: 'Isabelle', last_name: 'Chevalier', email: 'isabelle.chevalier@hpsj.fr', service: 'Imagerie médicale', training_format: 'distanciel',  answers: AVANCE_ANSWERS },
+  { first_name: 'Mathieu',  last_name: 'Simon',     email: 'mathieu.simon@hpsj.fr',      service: 'Direction des soins', training_format: 'presentiel',  answers: AVANCE_ANSWERS_2 },
+  { first_name: 'Camille',  last_name: 'Laurent',   email: 'camille.laurent@hpsj.fr',    service: 'Laboratoire',       training_format: 'indifferent', answers: AVANCE_ANSWERS },
+  { first_name: 'Romain',   last_name: 'Michel',    email: 'romain.michel@hpsj.fr',      service: 'Hématologie',       training_format: 'distanciel',  answers: AVANCE_ANSWERS_2 },
+  { first_name: 'Lucie',    last_name: 'Lefevre',   email: 'lucie.lefevre@hpsj.fr',      service: 'Anesthésie',        training_format: 'presentiel',  answers: AVANCE_ANSWERS },
 ];
 
 const INCOMPLETE_PARTICIPANTS = [
-  { first_name: 'Hugo',   last_name: 'Perrin',  email: 'hugo.perrin@hpsj.fr',   service: 'DSN' },
-  { first_name: 'Léa',    last_name: 'Mercier', email: 'lea.mercier@hpsj.fr',    service: 'RH' },
-  { first_name: 'Maxime', last_name: 'Robert',  email: 'maxime.robert@hpsj.fr',  service: null },
+  { first_name: 'Hugo',   last_name: 'Perrin',  email: 'hugo.perrin@hpsj.fr',   service: 'DSN',              training_format: null },
+  { first_name: 'Léa',    last_name: 'Mercier', email: 'lea.mercier@hpsj.fr',    service: 'RH',               training_format: null },
+  { first_name: 'Maxime', last_name: 'Robert',  email: 'maxime.robert@hpsj.fr',  service: null,               training_format: null },
 ];
 
 async function seedComplete() {
@@ -121,15 +133,16 @@ async function seedComplete() {
     const responses = buildResponses(p.answers);
 
     const { error } = await supabase.rpc('submit_quiz', {
-      p_first_name:   p.first_name,
-      p_last_name:    p.last_name,
-      p_email:        p.email,
-      p_service:      p.service,
-      p_completed_at: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
-      p_total_score:  score,
-      p_max_score:    MAX_SCORE,
-      p_level:        level,
-      p_responses:    responses,
+      p_first_name:       p.first_name,
+      p_last_name:        p.last_name,
+      p_email:            p.email,
+      p_service:          p.service,
+      p_completed_at:     new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
+      p_total_score:      score,
+      p_max_score:        MAX_SCORE,
+      p_level:            level,
+      p_responses:        responses,
+      p_training_format:  p.training_format,
     });
 
     if (error) {
@@ -147,12 +160,13 @@ async function seedIncomplete() {
   for (const p of INCOMPLETE_PARTICIPANTS) {
     const { error } = await supabase.from('participants').upsert(
       {
-        first_name:  p.first_name,
-        last_name:   p.last_name,
-        email:       p.email,
-        service:     p.service,
-        started_at:  new Date().toISOString(),
-        completed_at: null,
+        first_name:       p.first_name,
+        last_name:        p.last_name,
+        email:            p.email,
+        service:          p.service,
+        training_format:  p.training_format,
+        started_at:       new Date().toISOString(),
+        completed_at:     null,
       },
       { onConflict: 'email', ignoreDuplicates: false }
     );
