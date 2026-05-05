@@ -11,6 +11,8 @@ export type Participant = {
   first_name: string;
   last_name: string;
   email: string;
+  site: string | null;
+  pole: string | null;
   service: string | null;
   training_format: 'presentiel' | 'distanciel' | 'indifferent' | null;
   level: 'debutant' | 'intermediaire' | 'avance';
@@ -68,6 +70,8 @@ export default function AdminTable({ participants, filters }: Props) {
   const filtered = participants.filter((p) => {
     if (filters.level !== 'all' && p.level !== filters.level) return false;
     if (filters.format !== 'all' && p.training_format !== filters.format) return false;
+    if (filters.site && !p.site?.toLowerCase().includes(filters.site.toLowerCase())) return false;
+    if (filters.pole && !p.pole?.toLowerCase().includes(filters.pole.toLowerCase())) return false;
     return true;
   });
 
@@ -108,6 +112,8 @@ export default function AdminTable({ participants, filters }: Props) {
                 </td>
                 <td className="px-3 py-2" style={{ color: 'var(--text)' }}>{p.last_name}</td>
                 <td className="px-3 py-2" style={{ color: 'var(--text-muted)' }}>{p.email}</td>
+                <td className="px-3 py-2" style={{ color: 'var(--text-muted)' }}>{p.site ?? '—'}</td>
+                <td className="px-3 py-2" style={{ color: 'var(--text-muted)' }}>{p.pole ?? '—'}</td>
                 <td className="px-3 py-2" style={{ color: 'var(--text-muted)' }}>{p.service ?? '—'}</td>
                 <td className="px-3 py-2" style={{ color: 'var(--text-muted)' }}>
                   {FORMAT_LABEL[p.training_format ?? ''] ?? '—'}
@@ -115,10 +121,7 @@ export default function AdminTable({ participants, filters }: Props) {
                 <td className="px-3 py-2">
                   <span
                     className="inline-block text-xs font-semibold px-2 py-0.5 rounded-full"
-                    style={{
-                      background: LEVEL_COLOR[p.level],
-                      color: '#fff',
-                    }}
+                    style={{ background: LEVEL_COLOR[p.level], color: '#fff' }}
                   >
                     {LEVEL_LABEL[p.level]}
                   </span>

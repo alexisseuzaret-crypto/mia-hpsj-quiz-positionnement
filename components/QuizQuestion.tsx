@@ -1,14 +1,19 @@
 'use client';
 
+import { useRef } from 'react';
 import type { Question } from '@/lib/questions';
 
 type Props = {
   question: Question;
   selectedValues: string[];
   onAnswer: (values: string[]) => void;
+  otherText?: string;
+  onOtherText?: (text: string) => void;
 };
 
-export default function QuizQuestion({ question, selectedValues, onAnswer }: Props) {
+export default function QuizQuestion({ question, selectedValues, onAnswer, otherText, onOtherText }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleSingle = (value: string) => {
     onAnswer([value]);
   };
@@ -49,24 +54,44 @@ export default function QuizQuestion({ question, selectedValues, onAnswer }: Pro
         {question.options.map((opt) => {
           const isSelected = selectedValues.includes(opt.value);
           return (
-            <button
-              key={opt.value}
-              type="button"
-              onClick={() =>
-                question.type === 'single'
-                  ? handleSingle(opt.value)
-                  : handleMultiple(opt.value)
-              }
-              className="w-full text-left px-4 py-3 rounded-lg border transition-all duration-150 cursor-pointer"
-              style={{
-                borderColor: isSelected ? 'var(--primary)' : '#E2E8F0',
-                background: isSelected ? 'var(--primary)' : 'var(--background)',
-                color: isSelected ? '#fff' : 'var(--text)',
-              }}
-              aria-pressed={isSelected}
-            >
-              {opt.label}
-            </button>
+            <div key={opt.value}>
+              <button
+                type="button"
+                onClick={() =>
+                  question.type === 'single'
+                    ? handleSingle(opt.value)
+                    : handleMultiple(opt.value)
+                }
+                className="w-full text-left px-4 py-3 rounded-lg border transition-all duration-150 cursor-pointer"
+                style={{
+                  borderColor: isSelected ? 'var(--primary)' : '#E2E8F0',
+                  background: isSelected ? 'var(--primary)' : 'var(--background)',
+                  color: isSelected ? '#fff' : 'var(--text)',
+                }}
+                aria-pressed={isSelected}
+              >
+                {opt.label}
+              </button>
+
+              {opt.allowOtherText && isSelected && (
+                <input
+                  ref={inputRef}
+                  type="text"
+                  placeholder="Préciser…"
+                  value={otherText ?? ''}
+                  onChange={(e) => onOtherText?.(e.target.value)}
+                  maxLength={200}
+                  className="mt-2 w-full px-3 py-2 text-sm rounded-lg border outline-none"
+                  style={{
+                    borderColor: 'var(--primary)',
+                    color: 'var(--text)',
+                    background: 'var(--background)',
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  autoFocus
+                />
+              )}
+            </div>
           );
         })}
       </div>

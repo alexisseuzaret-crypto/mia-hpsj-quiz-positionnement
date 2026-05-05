@@ -13,14 +13,14 @@ const LEVEL_CONFIG: Record<Level, { label: string; color: string; bg: string; de
     color: '#0EA5E9',
     bg: '#F0F9FF',
     description: 'Vous utilisez Copilot Chat de façon régulière et avez acquis de bonnes bases. Il est temps de passer à la vitesse supérieure.',
-    advice: 'Notre programme approfondissement vous permettra de maîtriser le prompting avancé et d\'exploiter toutes les intégrations Microsoft 365.',
+    advice: "Notre programme approfondissement vous permettra de maîtriser le prompting avancé et d'exploiter toutes les intégrations Microsoft 365.",
   },
   avance: {
     label: 'Avancé',
     color: '#1A203D',
     bg: '#F1F5F9',
-    description: 'Vous maîtrisez Copilot Chat et l\'intégrez pleinement à votre travail. Vous êtes en mesure d\'en tirer le meilleur parti.',
-    advice: 'Notre programme expert vous aidera à affiner vos usages, explorer les fonctionnalités avancées et devenir un référent IA dans votre service.',
+    description: "Vous maîtrisez Copilot Chat et l'intégrez pleinement à votre travail. Vous êtes en mesure d'en tirer le meilleur parti.",
+    advice: "Notre programme expert vous aidera à affiner vos usages, explorer les fonctionnalités avancées et devenir un référent IA dans votre service.",
   },
 };
 
@@ -84,9 +84,17 @@ export default function ResultCard({ level, score, maxScore, firstName }: Props)
         <p>{config.advice}</p>
       </div>
 
-      <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-        Un email de confirmation vous sera envoyé avec les détails de votre session de formation.
-      </p>
+      {/* Et maintenant ? */}
+      <div
+        className="rounded-lg p-5 text-sm leading-relaxed"
+        style={{ background: 'var(--surface)', color: 'var(--text)' }}
+      >
+        <p className="font-semibold mb-2" style={{ color: 'var(--primary)' }}>Et maintenant ?</p>
+        <p>
+          Vous allez être recontacté(e) par le service formation des Hôpitaux Paris Saint-Joseph
+          Marie-Lannelongue qui vous proposera 3 dates de formation pour planifier vos 3 sessions d&apos;1h30.
+        </p>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,6 @@ export function calculateMaxScore(questions: Question[]): number {
     if (q.type === 'single') {
       return total + Math.max(...q.options.map(o => o.points));
     }
-    // multiple : somme des points strictement positifs uniquement
     return total + q.options.filter(o => o.points > 0).reduce((s, o) => s + o.points, 0);
   }, 0);
 }
@@ -35,7 +34,10 @@ export function applyKnockout(
   answers: Record<string, string[]>,
   level: Level
 ): Level {
-  // Q1 est single-choice → on vérifie l'index 0
-  const neverUsed = answers['q1']?.[0] === 'never' && answers['q2']?.includes('none');
+  // Q1 = "sais-tu lancer Copilot?" → non = Débutant systématique
+  if (answers['q1']?.[0] === 'no') return 'debutant';
+
+  // Q2 = fréquence jamais + Q3 = aucun outil → Débutant
+  const neverUsed = answers['q2']?.[0] === 'never' && answers['q3']?.includes('none');
   return neverUsed ? 'debutant' : level;
 }

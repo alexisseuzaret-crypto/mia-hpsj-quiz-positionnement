@@ -42,12 +42,12 @@ export default async function ParticipantPage({ params }: Props) {
   const [{ data: participant }, { data: responses }] = await Promise.all([
     supabase
       .from('participants')
-      .select('id, first_name, last_name, email, service, training_format, level, total_score, max_score, completed_at')
+      .select('id, first_name, last_name, email, site, pole, service, training_format, level, total_score, max_score, completed_at')
       .eq('id', id)
       .maybeSingle(),
     supabase
       .from('responses')
-      .select('question_id, answer_values, points_earned')
+      .select('question_id, answer_values, points_earned, other_text')
       .eq('participant_id', id)
       .order('question_id'),
   ]);
@@ -64,21 +64,23 @@ export default async function ParticipantPage({ params }: Props) {
   });
 
   const responseMap = Object.fromEntries(
-    (responses ?? []).map((r) => [r.question_id, { values: r.answer_values as string[], points: r.points_earned }])
+    (responses ?? []).map((r) => [
+      r.question_id,
+      {
+        values: r.answer_values as string[],
+        points: r.points_earned,
+        otherText: r.other_text as string | null,
+      },
+    ])
   );
 
   const currentSection = { ref: '' as string };
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--surface)' }}>
-      {/* Header */}
       <div style={{ background: 'var(--background)', borderBottom: '1px solid var(--surface)' }}>
         <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-4">
-          <Link
-            href="/admin/dashboard"
-            className="text-sm"
-            style={{ color: 'var(--text-muted)' }}
-          >
+          <Link href="/admin/dashboard" className="text-sm" style={{ color: 'var(--text-muted)' }}>
             ← Retour au dashboard
           </Link>
         </div>
@@ -98,9 +100,19 @@ export default async function ParticipantPage({ params }: Props) {
               <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
                 {participant.email}
               </p>
+              {participant.site && (
+                <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  Site : {participant.site}
+                </p>
+              )}
+              {participant.pole && (
+                <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
+                  Pôle : {participant.pole}
+                </p>
+              )}
               {participant.service && (
                 <p className="text-sm mt-0.5" style={{ color: 'var(--text-muted)' }}>
-                  {participant.service}
+                  Service : {participant.service}
                 </p>
               )}
               {participant.training_format && (
@@ -163,17 +175,23 @@ export default async function ParticipantPage({ params }: Props) {
                     {q.options.map((opt) => {
                       const isSelected = selectedValues.includes(opt.value);
                       return (
-                        <div
-                          key={opt.value}
-                          className="flex items-center justify-between px-3 py-1.5 rounded-lg text-sm"
-                          style={{
-                            background: isSelected ? 'var(--primary)' : 'transparent',
-                            color: isSelected ? '#fff' : 'var(--text-muted)',
-                          }}
-                        >
-                          <span>{opt.label}</span>
-                          {isSelected && (
-                            <span className="text-xs opacity-80">+{opt.points} pt{opt.points > 1 ? 's' : ''}</span>
+                        <div key={opt.value}>
+                          <div
+                            className="flex items-center justify-between px-3 py-1.5 rounded-lg text-sm"
+                            style={{
+                              background: isSelected ? 'var(--primary)' : 'transparent',
+                              color: isSelected ? '#fff' : 'var(--text-muted)',
+                            }}
+                          >
+                            <span>{opt.label}</span>
+                            {isSelected && (
+                              <span className="text-xs opacity-80">+{opt.points} pt{opt.points > 1 ? 's' : ''}</span>
+                            )}
+                          </div>
+                          {isSelected && opt.allowOtherText && resp?.otherText && (
+                            <p className="text-xs mt-0.5 ml-3 italic" style={{ color: 'var(--text-muted)' }}>
+                              Précision : {resp.otherText}
+                            </p>
                           )}
                         </div>
                       );

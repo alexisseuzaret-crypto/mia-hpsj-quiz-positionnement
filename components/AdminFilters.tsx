@@ -7,10 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Input } from '@/components/ui/input';
 
 export type Filters = {
   level: string;
   format: string;
+  site: string;
+  pole: string;
 };
 
 const LEVELS = [
@@ -58,6 +61,20 @@ export default function AdminFilters({ filters, onChange, total, filtered }: Pro
           <SelectItem value="indifferent">Indifférent</SelectItem>
         </SelectContent>
       </Select>
+
+      <Input
+        placeholder="Filtrer par site…"
+        value={filters.site}
+        onChange={(e) => onChange({ ...filters, site: e.target.value })}
+        className="w-48 h-9"
+      />
+
+      <Input
+        placeholder="Filtrer par pôle…"
+        value={filters.pole}
+        onChange={(e) => onChange({ ...filters, pole: e.target.value })}
+        className="w-48 h-9"
+      />
 
       <span className="text-sm ml-auto" style={{ color: 'var(--text-muted)' }}>
         {filtered === total ? `${total} participant${total > 1 ? 's' : ''}` : `${filtered} / ${total}`}

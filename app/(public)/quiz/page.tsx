@@ -16,7 +16,9 @@ const schema = z.object({
   firstName: z.string().trim().min(1, 'Prénom requis').max(100),
   lastName: z.string().trim().min(1, 'Nom requis').max(100),
   email: z.string().email('Email invalide').max(254, 'Email trop long'),
-  service: z.string().trim().max(100).optional(),
+  site: z.string().trim().min(1, 'Site requis').max(100),
+  pole: z.string().trim().min(1, 'Pôle requis').max(100),
+  service: z.string().trim().min(1, 'Service requis').max(100),
   trainingFormat: z.enum(['presentiel', 'distanciel', 'indifferent'], {
     error: 'Veuillez choisir un format',
   }),
@@ -80,7 +82,9 @@ export default function QuizPage() {
         first_name: data.firstName.trim(),
         last_name: data.lastName.trim(),
         email: data.email.toLowerCase().trim(),
-        service: data.service?.trim() || null,
+        site: data.site.trim(),
+        pole: data.pole.trim(),
+        service: data.service.trim(),
         training_format: data.trainingFormat,
       })
     );
@@ -168,19 +172,70 @@ export default function QuizPage() {
             )}
           </div>
 
+          {/* Site */}
+          <div className="space-y-1">
+            <Label htmlFor="site">Site *</Label>
+            <Input
+              id="site"
+              maxLength={100}
+              placeholder="Ex : Saint-Joseph Paris, Marie-Lannelongue Le Plessis-Robinson…"
+              aria-label="Site"
+              aria-invalid={!!errors.site}
+              aria-describedby={errors.site ? 'site-error' : 'site-helper'}
+              {...register('site')}
+            />
+            <p id="site-helper" className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Le site dans lequel vous travaillez.
+            </p>
+            {errors.site && (
+              <p id="site-error" role="alert" className="text-xs" style={{ color: '#EF4444' }}>
+                {errors.site.message}
+              </p>
+            )}
+          </div>
+
+          {/* Pôle */}
+          <div className="space-y-1">
+            <Label htmlFor="pole">Pôle *</Label>
+            <Input
+              id="pole"
+              maxLength={100}
+              placeholder="Ex : Pôle Médico-chirurgical, Pôle Mère-Enfant…"
+              aria-label="Pôle"
+              aria-invalid={!!errors.pole}
+              aria-describedby={errors.pole ? 'pole-error' : 'pole-helper'}
+              {...register('pole')}
+            />
+            <p id="pole-helper" className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Le pôle dont dépend votre service.
+            </p>
+            {errors.pole && (
+              <p id="pole-error" role="alert" className="text-xs" style={{ color: '#EF4444' }}>
+                {errors.pole.message}
+              </p>
+            )}
+          </div>
+
           {/* Service */}
           <div className="space-y-1">
-            <Label htmlFor="service">Service ou direction</Label>
+            <Label htmlFor="service">Service *</Label>
             <Input
               id="service"
               maxLength={100}
-              placeholder="Ex : Cardiologie, Pharmacie, RH, Direction des soins…"
-              aria-label="Service ou direction"
+              placeholder="Ex : Cardiologie, Pharmacie, Direction des soins…"
+              aria-label="Service"
+              aria-invalid={!!errors.service}
+              aria-describedby={errors.service ? 'service-error' : 'service-helper'}
               {...register('service')}
             />
-            <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Optionnel — précisez votre service pour faciliter l&apos;organisation des groupes.
+            <p id="service-helper" className="text-xs" style={{ color: 'var(--text-muted)' }}>
+              Votre service précis.
             </p>
+            {errors.service && (
+              <p id="service-error" role="alert" className="text-xs" style={{ color: '#EF4444' }}>
+                {errors.service.message}
+              </p>
+            )}
           </div>
 
           {/* Format de formation préféré */}

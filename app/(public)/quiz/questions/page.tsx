@@ -11,6 +11,8 @@ type Identity = {
   first_name: string;
   last_name: string;
   email: string;
+  site: string | null;
+  pole: string | null;
   service: string | null;
   training_format: 'presentiel' | 'distanciel' | 'indifferent' | null;
 };
@@ -44,6 +46,7 @@ export default function QuizQuestionsPage() {
   const [identity, setIdentity] = useState<Identity | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
 
   const [state, dispatch] = useReducer(reducer, {
     currentIndex: 0,
@@ -72,12 +75,18 @@ export default function QuizQuestionsPage() {
     setSubmitting(true);
     setError(null);
     try {
+      // Fusionner les réponses normales et les textes "Autre"
+      const allAnswers: Record<string, string[]> = { ...state.answers };
+      for (const [qId, text] of Object.entries(otherTexts)) {
+        if (text?.trim()) allAnswers[`${qId}_other`] = [text.trim().slice(0, 200)];
+      }
+
       const res = await fetch('/api/submit-quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ identity, answers: state.answers }),
+        body: JSON.stringify({ identity, answers: allAnswers }),
       });
-      const data = await res.json().catch(() => ({})) as { error?: string; level?: string; score?: number; maxScore?: number };
+      const data = await res.json().catch(() => ({})) as { error?: string; level?: string; score?: number; maxScore?: number; first_name?: string };
       if (!res.ok) throw new Error(data.error ?? 'Erreur serveur');
       sessionStorage.setItem('quiz_result', JSON.stringify(data));
       router.push('/quiz/resultat');
@@ -102,6 +111,10 @@ export default function QuizQuestionsPage() {
           selectedValues={selectedValues}
           onAnswer={(values) =>
             dispatch({ type: 'SET_ANSWER', questionId: question.id, values })
+          }
+          otherText={otherTexts[question.id]}
+          onOtherText={(text) =>
+            setOtherTexts((prev) => ({ ...prev, [question.id]: text }))
           }
         />
 

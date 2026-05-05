@@ -33,7 +33,11 @@ export async function GET() {
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
     .from('participants')
-    .select('first_name, last_name, email, service, training_format, level, total_score, max_score, completed_at')
+    .select(`
+      first_name, last_name, email, site, pole, service, training_format,
+      level, total_score, max_score, completed_at,
+      responses(question_id, other_text)
+    `)
     .not('completed_at', 'is', null)
     .order('completed_at', { ascending: false });
 
@@ -44,7 +48,10 @@ export async function GET() {
   const BOM = '﻿';
   const SEP = ';';
 
-  const header = ['Prénom', 'Nom', 'Email', 'Service', 'Format préféré', 'Niveau', 'Score', 'Score max', 'Pourcentage', 'Date'].join(SEP);
+  const header = [
+    'Prénom', 'Nom', 'Email', 'Site', 'Pôle', 'Service',
+    'Format préféré', 'Niveau', 'Score', 'Score max', 'Pourcentage', 'Date', 'Précisions',
+  ].join(SEP);
 
   const rows = (data ?? []).map((p) => {
     const pct = Math.round((p.total_score / p.max_score) * 100);
@@ -55,10 +62,17 @@ export async function GET() {
       hour: '2-digit',
       minute: '2-digit',
     });
+    const precisions = ((p.responses ?? []) as { question_id: string; other_text: string | null }[])
+      .filter((r) => r.other_text)
+      .map((r) => `${r.question_id}: ${r.other_text}`)
+      .join(' | ');
+
     return [
       csvEscape(p.first_name),
       csvEscape(p.last_name),
       csvEscape(p.email),
+      csvEscape(p.site),
+      csvEscape(p.pole),
       csvEscape(p.service),
       csvEscape(p.training_format ? FORMAT_LABEL[p.training_format] ?? '' : ''),
       csvEscape(LEVEL_LABEL[p.level]),
@@ -66,11 +80,11 @@ export async function GET() {
       String(p.max_score),
       `${pct}%`,
       csvEscape(date),
+      csvEscape(precisions),
     ].join(SEP);
   });
 
   const csv = BOM + [header, ...rows].join('\n');
-
   const filename = `participants-hpsj-${new Date().toISOString().slice(0, 10)}.csv`;
 
   return new Response(csv, {

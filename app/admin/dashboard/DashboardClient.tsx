@@ -13,11 +13,13 @@ type Props = {
 
 export default function DashboardClient({ participants }: Props) {
   const router = useRouter();
-  const [filters, setFilters] = useState<Filters>({ level: 'all', format: 'all' });
+  const [filters, setFilters] = useState<Filters>({ level: 'all', format: 'all', site: '', pole: '' });
 
   const filtered = participants.filter((p) => {
     if (filters.level !== 'all' && p.level !== filters.level) return false;
     if (filters.format !== 'all' && p.training_format !== filters.format) return false;
+    if (filters.site && !p.site?.toLowerCase().includes(filters.site.toLowerCase())) return false;
+    if (filters.pole && !p.pole?.toLowerCase().includes(filters.pole.toLowerCase())) return false;
     return true;
   });
 
@@ -28,11 +30,8 @@ export default function DashboardClient({ participants }: Props) {
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--surface)' }}>
-      {/* Header admin */}
       <div style={{ background: 'var(--background)', borderBottom: '1px solid var(--surface)' }}>
-        <div
-          className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between"
-        >
+        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold" style={{ color: 'var(--primary)' }}>
               Dashboard — Quiz Copilot Chat
@@ -69,7 +68,6 @@ export default function DashboardClient({ participants }: Props) {
         </div>
       </div>
 
-      {/* Contenu */}
       <div className="max-w-6xl mx-auto px-6 py-6 space-y-4">
         <AdminFilters
           filters={filters}
