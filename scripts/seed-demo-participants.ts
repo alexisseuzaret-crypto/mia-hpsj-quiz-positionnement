@@ -181,7 +181,7 @@ async function seedComplete() {
 async function seedIncomplete() {
   let ok = 0;
   for (const p of INCOMPLETE_PARTICIPANTS) {
-    const { error } = await supabase.from('participants').upsert(
+    const { error } = await supabase.from('hpsj_participants').upsert(
       {
         first_name:      p.first_name,
         last_name:       p.last_name,

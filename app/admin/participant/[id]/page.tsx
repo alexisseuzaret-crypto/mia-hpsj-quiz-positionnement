@@ -41,12 +41,12 @@ export default async function ParticipantPage({ params }: Props) {
 
   const [{ data: participant }, { data: responses }] = await Promise.all([
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('id, first_name, last_name, email, site, pole, service, training_format, level, total_score, max_score, completed_at')
       .eq('id', id)
       .maybeSingle(),
     supabase
-      .from('responses')
+      .from('hpsj_responses')
       .select('question_id, answer_values, points_earned, other_text')
       .eq('participant_id', id)
       .order('question_id'),

@@ -24,7 +24,7 @@ export async function DELETE(request: NextRequest) {
   // 3. Suppression (les réponses sont supprimées en cascade via ON DELETE CASCADE)
   const supabase = createSupabaseAdmin();
   const { error, count } = await supabase
-    .from('participants')
+    .from('hpsj_participants')
     .delete({ count: 'exact' })
     .eq('id', parsed.data.id);
 

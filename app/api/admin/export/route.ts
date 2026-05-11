@@ -32,11 +32,11 @@ export async function GET() {
 
   const supabase = createSupabaseAdmin();
   const { data, error } = await supabase
-    .from('participants')
+    .from('hpsj_participants')
     .select(`
       first_name, last_name, email, site, pole, service, training_format,
       level, total_score, max_score, completed_at,
-      responses(question_id, other_text)
+      hpsj_responses(question_id, other_text)
     `)
     .not('completed_at', 'is', null)
     .order('completed_at', { ascending: false });
@@ -62,7 +62,7 @@ export async function GET() {
       hour: '2-digit',
       minute: '2-digit',
     });
-    const precisions = ((p.responses ?? []) as { question_id: string; other_text: string | null }[])
+    const precisions = ((p.hpsj_responses ?? []) as { question_id: string; other_text: string | null }[])
       .filter((r) => r.other_text)
       .map((r) => `${r.question_id}: ${r.other_text}`)
       .join(' | ');

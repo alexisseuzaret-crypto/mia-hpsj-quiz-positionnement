@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 
     const supabase = createSupabaseAdmin();
     const { data } = await supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('id')
       .eq('email', parsed.data)
       .not('completed_at', 'is', null)

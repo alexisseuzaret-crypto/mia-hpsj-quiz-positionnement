@@ -36,23 +36,23 @@ export default async function StatsPage() {
     { data: crosstab },
   ] = await Promise.all([
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('id', { count: 'exact', head: true })
       .not('completed_at', 'is', null),
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('id', { count: 'exact', head: true })
       .is('completed_at', null),
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('level')
       .not('completed_at', 'is', null),
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('training_format')
       .not('completed_at', 'is', null),
     supabase
-      .from('participants')
+      .from('hpsj_participants')
       .select('level, training_format')
       .not('completed_at', 'is', null),
   ]);
