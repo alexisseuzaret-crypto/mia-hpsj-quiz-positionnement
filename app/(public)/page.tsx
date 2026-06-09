@@ -97,7 +97,7 @@ export default function LandingPage() {
           </Link>
 
           <p className="text-sm" style={{ color: 'var(--text-muted)' }}>
-            21 questions · 5 à 10 minutes · Résultat immédiat
+            19 questions · 5 à 10 minutes · Résultat immédiat
           </p>
         </div>
       </div>

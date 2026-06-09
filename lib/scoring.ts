@@ -34,10 +34,6 @@ export function applyKnockout(
   answers: Record<string, string[]>,
   level: Level
 ): Level {
-  // Q1 = "sais-tu lancer Copilot?" → non = Débutant systématique
   if (answers['q1']?.[0] === 'no') return 'debutant';
-
-  // Q2 = fréquence jamais + Q3 = aucun outil → Débutant
-  const neverUsed = answers['q2']?.[0] === 'never' && answers['q3']?.includes('none');
-  return neverUsed ? 'debutant' : level;
+  return level;
 }

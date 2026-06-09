@@ -25,7 +25,8 @@ type State = {
 type Action =
   | { type: 'SET_ANSWER'; questionId: string; values: string[] }
   | { type: 'NEXT' }
-  | { type: 'PREV' };
+  | { type: 'PREV' }
+  | { type: 'JUMP'; index: number };
 
 function reducer(state: State, action: Action): State {
   switch (action.type) {
@@ -38,7 +39,20 @@ function reducer(state: State, action: Action): State {
       return { ...state, currentIndex: Math.min(state.currentIndex + 1, QUESTIONS.length - 1) };
     case 'PREV':
       return { ...state, currentIndex: Math.max(state.currentIndex - 1, 0) };
+    case 'JUMP':
+      return { ...state, currentIndex: action.index };
   }
+}
+
+// Toutes les questions profil (q1-q5) ont une réponse maximalement négative
+function isZeroIA(answers: Record<string, string[]>): boolean {
+  return (
+    answers['q1']?.[0] === 'no' &&
+    answers['q2']?.[0] === 'never' &&
+    answers['q3']?.[0] === 'novice' &&
+    (answers['q4'] ?? []).includes('none') &&
+    (answers['q5'] ?? []).includes('none')
+  );
 }
 
 export default function QuizQuestionsPage() {
@@ -47,6 +61,8 @@ export default function QuizQuestionsPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [otherTexts, setOtherTexts] = useState<Record<string, string>>({});
+  // null = quiz normal | 'pending' = transition affichée | 'confirmed' = saut effectué
+  const [knockoutState, setKnockoutState] = useState<null | 'pending' | 'confirmed'>(null);
 
   const [state, dispatch] = useReducer(reducer, {
     currentIndex: 0,
@@ -70,13 +86,34 @@ export default function QuizQuestionsPage() {
   const isLast = state.currentIndex === QUESTIONS.length - 1;
   const canProceed = selectedValues.length > 0;
 
+  const handleNext = () => {
+    // Vérification knockout zéro IA après q5 (index 4)
+    if (state.currentIndex === 4 && isZeroIA(state.answers)) {
+      setKnockoutState('pending');
+      return;
+    }
+    dispatch({ type: 'NEXT' });
+  };
+
+  const confirmKnockout = () => {
+    setKnockoutState('confirmed');
+    dispatch({ type: 'JUMP', index: QUESTIONS.length - 1 });
+  };
+
   const handleSubmit = async () => {
     if (!canProceed || !identity) return;
     setSubmitting(true);
     setError(null);
     try {
-      // Fusionner les réponses normales et les textes "Autre"
       const allAnswers: Record<string, string[]> = { ...state.answers };
+
+      // Knockout : stocker q6-q18 comme non répondus
+      if (knockoutState === 'confirmed') {
+        for (const q of QUESTIONS.slice(5, QUESTIONS.length - 1)) {
+          if (!allAnswers[q.id]) allAnswers[q.id] = [];
+        }
+      }
+
       for (const [qId, text] of Object.entries(otherTexts)) {
         if (text?.trim()) allAnswers[`${qId}_other`] = [text.trim().slice(0, 200)];
       }
@@ -106,60 +143,85 @@ export default function QuizQuestionsPage() {
       >
         <ProgressBar current={state.currentIndex + 1} total={QUESTIONS.length} />
 
-        <QuizQuestion
-          question={question}
-          selectedValues={selectedValues}
-          onAnswer={(values) =>
-            dispatch({ type: 'SET_ANSWER', questionId: question.id, values })
-          }
-          otherText={otherTexts[question.id]}
-          onOtherText={(text) =>
-            setOtherTexts((prev) => ({ ...prev, [question.id]: text }))
-          }
-        />
+        {knockoutState === 'pending' ? (
+          <div className="space-y-6">
+            <div
+              className="rounded-xl p-6 text-center"
+              style={{ background: 'var(--surface)' }}
+            >
+              <p className="text-base leading-relaxed" style={{ color: 'var(--text)' }}>
+                Merci pour vos réponses. Une dernière question pour finaliser votre profil.
+              </p>
+            </div>
+            <div className="flex justify-end pt-2">
+              <Button
+                type="button"
+                onClick={confirmKnockout}
+                className="cursor-pointer"
+                style={{ background: 'var(--primary)', color: '#fff' }}
+              >
+                Continuer →
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <QuizQuestion
+              question={question}
+              selectedValues={selectedValues}
+              onAnswer={(values) =>
+                dispatch({ type: 'SET_ANSWER', questionId: question.id, values })
+              }
+              otherText={otherTexts[question.id]}
+              onOtherText={(text) =>
+                setOtherTexts((prev) => ({ ...prev, [question.id]: text }))
+              }
+            />
 
-        {error && (
-          <p role="alert" className="text-sm text-center" style={{ color: '#EF4444' }}>
-            {error}
-          </p>
+            {error && (
+              <p role="alert" className="text-sm text-center" style={{ color: '#EF4444' }}>
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-between gap-4 pt-2">
+              {state.currentIndex > 0 && knockoutState !== 'confirmed' ? (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => dispatch({ type: 'PREV' })}
+                  className="cursor-pointer"
+                >
+                  ← Précédent
+                </Button>
+              ) : (
+                <div />
+              )}
+
+              {isLast ? (
+                <Button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={!canProceed || submitting}
+                  className="cursor-pointer"
+                  style={{ background: 'var(--primary)', color: '#fff' }}
+                >
+                  {submitting ? 'Envoi en cours…' : 'Soumettre le quiz →'}
+                </Button>
+              ) : (
+                <Button
+                  type="button"
+                  onClick={handleNext}
+                  disabled={!canProceed}
+                  className="cursor-pointer"
+                  style={{ background: 'var(--primary)', color: '#fff' }}
+                >
+                  Suivant →
+                </Button>
+              )}
+            </div>
+          </>
         )}
-
-        <div className="flex justify-between gap-4 pt-2">
-          {state.currentIndex > 0 ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => dispatch({ type: 'PREV' })}
-              className="cursor-pointer"
-            >
-              ← Précédent
-            </Button>
-          ) : (
-            <div />
-          )}
-
-          {isLast ? (
-            <Button
-              type="button"
-              onClick={handleSubmit}
-              disabled={!canProceed || submitting}
-              className="cursor-pointer"
-              style={{ background: 'var(--primary)', color: '#fff' }}
-            >
-              {submitting ? 'Envoi en cours…' : 'Soumettre le quiz →'}
-            </Button>
-          ) : (
-            <Button
-              type="button"
-              onClick={() => dispatch({ type: 'NEXT' })}
-              disabled={!canProceed}
-              className="cursor-pointer"
-              style={{ background: 'var(--primary)', color: '#fff' }}
-            >
-              Suivant →
-            </Button>
-          )}
-        </div>
       </div>
     </div>
   );

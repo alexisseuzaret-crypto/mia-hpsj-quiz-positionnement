@@ -18,14 +18,14 @@ export type Question = {
   exclusiveValue?: string;
 };
 
-// Score max calculé dynamiquement : ~87 pts (21 questions)
+// Score max calculé dynamiquement : ~76 pts (19 questions)
 export const QUESTIONS: Question[] = [
   // ── Section 1 — Profil ──────────────────────────────────────────────────────
   {
     id: 'q1',
     section: 'profil',
     type: 'single',
-    label: 'Sais-tu comment lancer Copilot Chat sur ton poste de travail ?',
+    label: 'Savez-vous comment lancer Copilot Chat sur votre poste de travail ?',
     options: [
       { value: 'yes', label: 'Oui, je sais le lancer', points: 3 },
       { value: 'no',  label: 'Non, je ne sais pas',    points: 0 },
@@ -35,7 +35,7 @@ export const QUESTIONS: Question[] = [
     id: 'q2',
     section: 'profil',
     type: 'single',
-    label: 'À quelle fréquence utilises-tu Copilot Chat aujourd\'hui ?',
+    label: "À quelle fréquence utilisez-vous Copilot Chat aujourd'hui ?",
     options: [
       { value: 'never',   label: 'Jamais',                        points: 0 },
       { value: 'tried',   label: "J'ai essayé une ou deux fois",  points: 1 },
@@ -46,51 +46,33 @@ export const QUESTIONS: Question[] = [
   {
     id: 'q3',
     section: 'profil',
-    type: 'multiple',
-    label: 'Dans quels outils as-tu déjà utilisé Copilot ?',
-    helpText: 'Plusieurs réponses possibles',
-    exclusiveValue: 'none',
+    type: 'single',
+    label: 'Comment évaluez-vous votre niveau global avec les outils IA (ChatGPT, Copilot…) ?',
     options: [
-      { value: 'web',     label: 'Copilot Chat (web)',  points: 1 },
-      { value: 'outlook', label: 'Outlook',             points: 1 },
-      { value: 'word',    label: 'Word',                points: 1 },
-      { value: 'excel',   label: 'Excel',               points: 1 },
-      { value: 'teams',   label: 'Teams',               points: 1 },
-      { value: 'ppt',     label: 'PowerPoint',          points: 1 },
-      { value: 'other',   label: 'Autre',               points: 1, allowOtherText: true },
-      { value: 'none',    label: 'Aucun de ces outils', points: 0 },
+      { value: 'novice',       label: "Je n'en ai jamais utilisé",                           points: 0 },
+      { value: 'beginner',     label: "Je m'en sers occasionnellement",                       points: 2 },
+      { value: 'intermediate', label: "Je m'en sers régulièrement et je suis à l'aise",      points: 3 },
+      { value: 'advanced',     label: "Je les utilise intensivement et j'aide mes collègues", points: 5 },
     ],
   },
   {
     id: 'q4',
-    section: 'profil',
-    type: 'single',
-    label: 'Comment évaluez-vous votre niveau global avec les outils IA (ChatGPT, Copilot…) ?',
-    options: [
-      { value: 'novice',       label: "Je n'en ai jamais utilisé",                            points: 0 },
-      { value: 'beginner',     label: "Je m'en sers occasionnellement",                        points: 2 },
-      { value: 'intermediate', label: "Je m'en sers régulièrement et je suis à l'aise",       points: 3 },
-      { value: 'advanced',     label: "Je les utilise intensivement et j'aide mes collègues",  points: 5 },
-    ],
-  },
-  {
-    id: 'q5',
     section: 'profil',
     type: 'multiple',
     label: "En dehors de Copilot Chat, avez-vous utilisé d'autres outils IA ?",
     helpText: 'Plusieurs réponses possibles',
     exclusiveValue: 'none',
     options: [
-      { value: 'none',       label: 'Aucun',           points: 0 },
-      { value: 'chatgpt',    label: 'ChatGPT',          points: 2 },
-      { value: 'gemini',     label: 'Gemini (Google)',  points: 2 },
-      { value: 'perplexity', label: 'Perplexity AI',    points: 2 },
-      { value: 'claude',     label: 'Claude',           points: 2 },
-      { value: 'other',      label: 'Autre',            points: 1, allowOtherText: true },
+      { value: 'none',       label: 'Aucun',          points: 0 },
+      { value: 'chatgpt',    label: 'ChatGPT',         points: 2 },
+      { value: 'gemini',     label: 'Gemini (Google)', points: 2 },
+      { value: 'perplexity', label: 'Perplexity AI',   points: 2 },
+      { value: 'claude',     label: 'Claude',          points: 2 },
+      { value: 'other',      label: 'Autre',           points: 1, allowOtherText: true },
     ],
   },
   {
-    id: 'q6',
+    id: 'q5',
     section: 'profil',
     type: 'multiple',
     label: 'Avez-vous suivi une formation ou un accompagnement sur les outils IA ?',
@@ -105,31 +87,31 @@ export const QUESTIONS: Question[] = [
 
   // ── Section 2 — Prompting ───────────────────────────────────────────────────
   {
-    id: 'q7',
+    id: 'q6',
     section: 'prompting',
     type: 'single',
     label: 'Comment formulez-vous généralement vos demandes à Copilot Chat ?',
     options: [
-      { value: 'short',      label: 'En quelques mots (mot-clef)',                               points: 1 },
-      { value: 'sentence',   label: 'En une phrase / question claire',                           points: 2 },
-      { value: 'detailed',   label: 'Avec un contexte et des détails précis',                    points: 3 },
-      { value: 'structured', label: 'Avec un rôle, un contexte, une tâche et un format attendu', points: 4 },
+      { value: 'short',      label: 'En quelques mots (mot-clef)',                                points: 1 },
+      { value: 'sentence',   label: 'En une phrase / question claire',                            points: 2 },
+      { value: 'detailed',   label: 'Avec un contexte et des détails précis',                     points: 3 },
+      { value: 'structured', label: 'Avec un rôle, un contexte, une tâche et un format attendu',  points: 4 },
     ],
   },
   {
-    id: 'q8',
+    id: 'q7',
     section: 'prompting',
     type: 'single',
     label: 'Donnez-vous un rôle à Copilot Chat (ex. « Tu es un expert… ») ?',
     options: [
-      { value: 'dont_know', label: 'Je ne sais pas',         points: 0 },
-      { value: 'never',     label: 'Non, jamais',             points: 0 },
-      { value: 'sometimes', label: 'Parfois',                 points: 2 },
-      { value: 'always',    label: 'Oui, systématiquement',  points: 3 },
+      { value: 'dont_know', label: 'Je ne sais pas',        points: 0 },
+      { value: 'never',     label: 'Non, jamais',            points: 0 },
+      { value: 'sometimes', label: 'Parfois',                points: 2 },
+      { value: 'always',    label: 'Oui, systématiquement', points: 3 },
     ],
   },
   {
-    id: 'q9',
+    id: 'q8',
     section: 'prompting',
     type: 'multiple',
     label: 'Quels éléments incluez-vous habituellement dans vos prompts ?',
@@ -144,19 +126,19 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 'q10',
+    id: 'q9',
     section: 'prompting',
     type: 'single',
     label: 'Si la réponse de Copilot ne vous convient pas, que faites-vous ?',
     options: [
-      { value: 'abandon',  label: "J'abandonne",                                                  points: 0 },
-      { value: 'restart',  label: 'Je recommence une nouvelle conversation',                       points: 0 },
-      { value: 'rephrase', label: 'Je reformule ma demande',                                       points: 2 },
-      { value: 'iterate',  label: "Je précise ou affine ma demande dans la même conversation",     points: 3 },
+      { value: 'abandon',  label: "J'abandonne",                                                points: 0 },
+      { value: 'restart',  label: 'Je recommence une nouvelle conversation',                     points: 0 },
+      { value: 'rephrase', label: 'Je reformule ma demande',                                     points: 2 },
+      { value: 'iterate',  label: "Je précise ou affine ma demande dans la même conversation",   points: 3 },
     ],
   },
   {
-    id: 'q11',
+    id: 'q10',
     section: 'prompting',
     type: 'single',
     label: "Savez-vous ce qu'est le « prompt chaining » (enchaîner plusieurs prompts pour un résultat complexe) ?",
@@ -169,32 +151,20 @@ export const QUESTIONS: Question[] = [
 
   // ── Section 3 — Fonctionnalités ─────────────────────────────────────────────
   {
-    id: 'q12',
-    section: 'fonctionnalites',
-    type: 'single',
-    label: 'Avez-vous utilisé Copilot Chat dans Microsoft Teams (résumé de réunion, questions sur un chat…) ?',
-    options: [
-      { value: 'no',      label: 'Non, jamais',                                            points: 0 },
-      { value: 'tried',   label: "J'ai essayé une fois",                                   points: 1 },
-      { value: 'regular', label: 'Oui, régulièrement',                                     points: 2 },
-      { value: 'expert',  label: 'Oui, et je combine plusieurs fonctions Teams + Copilot', points: 4 },
-    ],
-  },
-  {
-    id: 'q13',
+    id: 'q11',
     section: 'fonctionnalites',
     type: 'multiple',
     label: 'Parmi ces fonctionnalités de Copilot Chat, lesquelles avez-vous déjà utilisées ?',
     helpText: 'Plusieurs réponses possibles',
     options: [
-      { value: 'web_search',        label: 'Recherche web intégrée',    points: 1 },
+      { value: 'web_search',        label: 'Recherche web intégrée',     points: 1 },
       { value: 'document_analysis', label: 'Analyse de documents joints', points: 1 },
       { value: 'translation',       label: 'Traduction de textes',        points: 1 },
       { value: 'image_gen',         label: "Génération d'images",         points: 1 },
     ],
   },
   {
-    id: 'q14',
+    id: 'q12',
     section: 'fonctionnalites',
     type: 'single',
     label: 'Avez-vous déjà généré des images avec Copilot ?',
@@ -205,43 +175,43 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 'q15',
+    id: 'q13',
     section: 'fonctionnalites',
     type: 'single',
     label: 'Avez-vous déjà utilisé Copilot Chat pour analyser ou résumer des documents ?',
     options: [
-      { value: 'no',      label: "Non, je ne savais pas que c'était possible",  points: 0 },
-      { value: 'tried',   label: "J'ai essayé quelques fois",                   points: 2 },
-      { value: 'regular', label: "Oui, je l'utilise régulièrement",             points: 3 },
+      { value: 'no',      label: "Non, je ne savais pas que c'était possible",    points: 0 },
+      { value: 'tried',   label: "J'ai essayé quelques fois",                     points: 2 },
+      { value: 'regular', label: "Oui, je l'utilise régulièrement",               points: 3 },
       { value: 'expert',  label: "Oui, et je l'intègre à mon workflow quotidien", points: 4 },
     ],
   },
   {
-    id: 'q16',
+    id: 'q14',
     section: 'fonctionnalites',
     type: 'single',
-    label: 'Comment utilises-tu Copilot Chat pour faire tes comptes rendus de réunions ?',
+    label: 'Comment utilisez-vous Copilot Chat pour faire vos comptes rendus de réunion ?',
     options: [
-      { value: 'dont_know',         label: 'Je ne sais pas',             points: 0 },
-      { value: 'other_tool',        label: "J'utilise un autre outil",   points: 1, allowOtherText: true },
+      { value: 'dont_know',         label: 'Je ne sais pas',            points: 0 },
+      { value: 'other_tool',        label: "J'utilise un autre outil",  points: 1, allowOtherText: true },
       { value: 'transcript_prompt', label: 'Je copie le transcript de la réunion et je rédige un prompt pour que Copilot génère un compte rendu pertinent', points: 3 },
     ],
   },
 
   // ── Section 4 — Usage responsable ───────────────────────────────────────────
   {
-    id: 'q17',
+    id: 'q15',
     section: 'usage-responsable',
     type: 'single',
     label: 'Vérifiez-vous les informations fournies par Copilot Chat avant de les utiliser ?',
     options: [
-      { value: 'never',     label: 'Non, je fais confiance aux réponses',           points: 0 },
-      { value: 'sometimes', label: 'Parfois, pour les informations importantes',     points: 2 },
-      { value: 'always',    label: "Oui, toujours — je vérifie avant d'utiliser",   points: 3 },
+      { value: 'never',     label: 'Non, je fais confiance aux réponses',          points: 0 },
+      { value: 'sometimes', label: 'Parfois, pour les informations importantes',    points: 2 },
+      { value: 'always',    label: "Oui, toujours — je vérifie avant d'utiliser",  points: 3 },
     ],
   },
   {
-    id: 'q18',
+    id: 'q16',
     section: 'usage-responsable',
     type: 'single',
     label: 'Partagez-vous des données patients ou des informations sensibles avec Copilot Chat ?',
@@ -252,7 +222,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 'q19',
+    id: 'q17',
     section: 'usage-responsable',
     type: 'single',
     label: 'Connaissez-vous les principales limites de Copilot Chat (hallucinations, biais, données cutoff…) ?',
@@ -263,7 +233,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 'q20',
+    id: 'q18',
     section: 'usage-responsable',
     type: 'single',
     label: "Avez-vous conscience des obligations réglementaires liées à l'IA dans le secteur santé (RGPD, HDS…) ?",
@@ -274,7 +244,7 @@ export const QUESTIONS: Question[] = [
     ],
   },
   {
-    id: 'q21',
+    id: 'q19',
     section: 'usage-responsable',
     type: 'single',
     label: "Comment percevez-vous l'IA dans votre environnement de travail hospitalier ?",

@@ -19,47 +19,50 @@ if (!supabaseUrl || !serviceRoleKey) {
 
 const supabase = createClient(supabaseUrl, serviceRoleKey);
 
-// Réponses type par niveau — 21 questions
+// Réponses type par niveau — 19 questions
+
+// Profil zéro IA : déclenche le knockout (q1-q5 tous négatifs, q6-q18 non répondus)
 const DEBUTANT_ANSWERS: Record<string, string[]> = {
-  q1: ['no'], q2: ['never'], q3: ['none'], q4: ['novice'], q5: ['none'], q6: ['none'],
-  q7: ['short'], q8: ['never'], q9: [], q10: ['abandon'],
-  q11: ['no'], q12: ['no'], q13: [], q14: ['no'], q15: ['no'], q16: ['dont_know'],
-  q17: ['sometimes'], q18: ['yes_sometimes'], q19: ['no'], q20: ['heard'], q21: ['neutral'],
+  q1: ['no'], q2: ['never'], q3: ['novice'], q4: ['none'], q5: ['none'],
+  q6: [], q7: [], q8: [], q9: [], q10: [],
+  q11: [], q12: [], q13: [], q14: [], q15: [], q16: [], q17: [], q18: [],
+  q19: ['threat'],
 };
 
+// Débutant qui répond à toutes les questions (ne déclenche pas le knockout)
 const DEBUTANT_ANSWERS_2: Record<string, string[]> = {
-  q1: ['yes'], q2: ['tried'], q3: ['web'], q4: ['beginner'], q5: ['chatgpt'], q6: ['none'],
-  q7: ['sentence'], q8: ['never'], q9: ['context'], q10: ['restart'],
-  q11: ['no'], q12: ['no'], q13: ['translation'], q14: ['no'], q15: ['no'], q16: ['dont_know'],
-  q17: ['sometimes'], q18: ['no'], q19: ['partial'], q20: ['no'], q21: ['neutral'],
+  q1: ['yes'], q2: ['tried'], q3: ['beginner'], q4: ['chatgpt'], q5: ['none'],
+  q6: ['short'], q7: ['never'], q8: ['context'], q9: ['restart'],
+  q10: ['no'], q11: ['translation'], q12: ['no'], q13: ['no'], q14: ['dont_know'],
+  q15: ['sometimes'], q16: ['no'], q17: ['partial'], q18: ['no'], q19: ['neutral'],
 };
 
 const INTER_ANSWERS: Record<string, string[]> = {
-  q1: ['yes'], q2: ['monthly'], q3: ['web', 'outlook', 'word'], q4: ['intermediate'], q5: ['chatgpt', 'gemini'], q6: ['auto'],
-  q7: ['detailed'], q8: ['sometimes'], q9: ['context', 'format'], q10: ['iterate'],
-  q11: ['heard'], q12: ['tried'], q13: ['web_search', 'translation'], q14: ['tried'], q15: ['tried'], q16: ['other_tool'],
-  q17: ['sometimes'], q18: ['no'], q19: ['partial'], q20: ['heard'], q21: ['opportunity'],
+  q1: ['yes'], q2: ['monthly'], q3: ['intermediate'], q4: ['chatgpt', 'gemini'], q5: ['auto'],
+  q6: ['detailed'], q7: ['sometimes'], q8: ['context', 'format'], q9: ['iterate'],
+  q10: ['heard'], q11: ['web_search', 'translation'], q12: ['tried'], q13: ['tried'], q14: ['other_tool'],
+  q15: ['sometimes'], q16: ['no'], q17: ['partial'], q18: ['heard'], q19: ['opportunity'],
 };
 
 const INTER_ANSWERS_2: Record<string, string[]> = {
-  q1: ['yes'], q2: ['daily'], q3: ['web', 'outlook', 'teams'], q4: ['intermediate'], q5: ['chatgpt'], q6: ['auto'],
-  q7: ['detailed'], q8: ['sometimes'], q9: ['context', 'length'], q10: ['iterate'],
-  q11: ['heard'], q12: ['regular'], q13: ['document_analysis', 'translation'], q14: ['tried'], q15: ['regular'], q16: ['transcript_prompt'],
-  q17: ['always'], q18: ['no'], q19: ['partial'], q20: ['yes'], q21: ['opportunity'],
+  q1: ['yes'], q2: ['daily'], q3: ['intermediate'], q4: ['chatgpt'], q5: ['auto'],
+  q6: ['detailed'], q7: ['sometimes'], q8: ['context', 'length'], q9: ['iterate'],
+  q10: ['heard'], q11: ['document_analysis', 'translation'], q12: ['tried'], q13: ['regular'], q14: ['transcript_prompt'],
+  q15: ['always'], q16: ['no'], q17: ['partial'], q18: ['yes'], q19: ['opportunity'],
 };
 
 const AVANCE_ANSWERS: Record<string, string[]> = {
-  q1: ['yes'], q2: ['daily'], q3: ['web', 'outlook', 'word', 'excel', 'teams', 'ppt'], q4: ['advanced'], q5: ['chatgpt', 'gemini', 'perplexity', 'claude'], q6: ['external'],
-  q7: ['structured'], q8: ['always'], q9: ['context', 'format', 'length', 'examples', 'role', 'style'], q10: ['iterate'],
-  q11: ['use'], q12: ['expert'], q13: ['web_search', 'document_analysis', 'translation', 'image_gen'], q14: ['regular'], q15: ['expert'], q16: ['transcript_prompt'],
-  q17: ['always'], q18: ['no'], q19: ['well'], q20: ['yes'], q21: ['opportunity'],
+  q1: ['yes'], q2: ['daily'], q3: ['advanced'], q4: ['chatgpt', 'gemini', 'perplexity', 'claude'], q5: ['external'],
+  q6: ['structured'], q7: ['always'], q8: ['context', 'format', 'length', 'examples', 'role', 'style'], q9: ['iterate'],
+  q10: ['use'], q11: ['web_search', 'document_analysis', 'translation', 'image_gen'], q12: ['regular'], q13: ['expert'], q14: ['transcript_prompt'],
+  q15: ['always'], q16: ['no'], q17: ['well'], q18: ['yes'], q19: ['opportunity'],
 };
 
 const AVANCE_ANSWERS_2: Record<string, string[]> = {
-  q1: ['yes'], q2: ['daily'], q3: ['web', 'outlook', 'word', 'teams'], q4: ['advanced'], q5: ['chatgpt', 'gemini'], q6: ['auto', 'external'],
-  q7: ['structured'], q8: ['always'], q9: ['context', 'format', 'examples', 'role'], q10: ['iterate'],
-  q11: ['use'], q12: ['regular'], q13: ['web_search', 'document_analysis', 'translation'], q14: ['regular'], q15: ['regular'], q16: ['transcript_prompt'],
-  q17: ['always'], q18: ['no'], q19: ['well'], q20: ['yes'], q21: ['opportunity'],
+  q1: ['yes'], q2: ['daily'], q3: ['advanced'], q4: ['chatgpt', 'gemini'], q5: ['auto', 'external'],
+  q6: ['structured'], q7: ['always'], q8: ['context', 'format', 'examples', 'role'], q9: ['iterate'],
+  q10: ['use'], q11: ['web_search', 'document_analysis', 'translation'], q12: ['regular'], q13: ['regular'], q14: ['transcript_prompt'],
+  q15: ['always'], q16: ['no'], q17: ['well'], q18: ['yes'], q19: ['opportunity'],
 };
 
 type AnswerSet = Record<string, string[]>;

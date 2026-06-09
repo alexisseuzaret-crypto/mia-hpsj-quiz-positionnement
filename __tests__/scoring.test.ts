@@ -21,8 +21,8 @@ const multipleQ: Question[] = [{
 }];
 
 describe('calculateMaxScore', () => {
-  it('retourne 87 pour les 21 questions réelles', () => {
-    expect(calculateMaxScore(QUESTIONS)).toBe(87);
+  it('retourne 76 pour les 19 questions réelles', () => {
+    expect(calculateMaxScore(QUESTIONS)).toBe(76);
   });
   it('single → max des options', () => {
     expect(calculateMaxScore(singleQ)).toBe(5);
@@ -49,33 +49,39 @@ describe('calculateScore', () => {
 
 describe('classify', () => {
   it('< 35% → debutant', () => {
-    expect(classify(30, 87)).toBe('debutant');
+    expect(classify(26, 76)).toBe('debutant');
   });
   it('>= 35% et < 70% → intermediaire', () => {
-    expect(classify(31, 87)).toBe('intermediaire');
-    expect(classify(55, 87)).toBe('intermediaire');
+    expect(classify(27, 76)).toBe('intermediaire');
+    expect(classify(53, 76)).toBe('intermediaire');
   });
   it('>= 70% → avance', () => {
-    expect(classify(61, 87)).toBe('avance');
-    expect(classify(87, 87)).toBe('avance');
+    expect(classify(54, 76)).toBe('avance');
+    expect(classify(76, 76)).toBe('avance');
   });
 });
 
 describe('applyKnockout', () => {
-  it('Q1=no → force debutant (knockout launch)', () => {
+  it('Q1=no seul → force debutant (ancien knockout préservé)', () => {
     expect(applyKnockout({ q1: ['no'] }, 'avance')).toBe('debutant');
     expect(applyKnockout({ q1: ['no'] }, 'intermediaire')).toBe('debutant');
   });
-  it('Q2=never ET Q3 inclut none → force debutant', () => {
-    expect(applyKnockout({ q1: ['yes'], q2: ['never'], q3: ['none'] }, 'avance')).toBe('debutant');
+  it('Zéro IA complet (5/5 négatifs) → debutant', () => {
+    expect(applyKnockout(
+      { q1: ['no'], q2: ['never'], q3: ['novice'], q4: ['none'], q5: ['none'] },
+      'debutant'
+    )).toBe('debutant');
   });
-  it('Q2=never mais Q3 sans none → conserve level', () => {
-    expect(applyKnockout({ q1: ['yes'], q2: ['never'], q3: ['web'] }, 'intermediaire')).toBe('intermediaire');
+  it('Zéro IA partiel (4/5 négatifs, q1=yes) → conserve level', () => {
+    expect(applyKnockout(
+      { q1: ['yes'], q2: ['never'], q3: ['novice'], q4: ['none'], q5: ['none'] },
+      'intermediaire'
+    )).toBe('intermediaire');
   });
-  it('Q3 inclut none mais Q2 != never → conserve level', () => {
-    expect(applyKnockout({ q1: ['yes'], q2: ['daily'], q3: ['none'] }, 'avance')).toBe('avance');
-  });
-  it('Q1=yes, pas de knockout → conserve level', () => {
-    expect(applyKnockout({ q1: ['yes'], q2: ['daily'], q3: ['web'] }, 'avance')).toBe('avance');
+  it('Profil avancé normal → avance', () => {
+    expect(applyKnockout(
+      { q1: ['yes'], q2: ['daily'], q3: ['advanced'], q4: ['chatgpt', 'claude'], q5: ['external'] },
+      'avance'
+    )).toBe('avance');
   });
 });
