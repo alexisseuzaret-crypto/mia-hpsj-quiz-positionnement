@@ -26,7 +26,7 @@ export default function LandingPage() {
               className="text-3xl sm:text-4xl font-bold leading-tight"
               style={{ color: 'var(--primary)' }}
             >
-              Quiz de positionnement<br />Formation Copilot Chat
+              Quiz de positionnement<br />Formation Copilot Chat & IA générative
             </h1>
             <p className="text-xl" style={{ color: 'var(--text-muted)' }}>
               Évaluez votre niveau en 5 à 10 minutes et découvrez le programme de formation adapté à votre profil.
@@ -43,7 +43,7 @@ export default function LandingPage() {
             </h2>
             <p className="text-sm leading-relaxed" style={{ color: 'var(--text)' }}>
               Les Hôpitaux Paris Saint-Joseph Marie-Lannelongue lancent un plan de formation à
-              Microsoft Copilot Chat. Ce quiz permet d&apos;identifier votre niveau actuel pour
+              l&apos;IA générative avec Microsoft Copilot Chat. Ce quiz permet d&apos;identifier votre niveau actuel pour
               vous orienter vers le programme le plus adapté à votre profil.
             </p>
             <div className="grid sm:grid-cols-3 gap-3">

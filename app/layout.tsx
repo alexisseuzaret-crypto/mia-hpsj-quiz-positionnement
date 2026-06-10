@@ -8,7 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: 'Quiz de positionnement — Formation Copilot Chat',
+  title: 'Quiz de positionnement — Formation Copilot Chat & IA générative',
   description: 'Évaluez votre niveau Microsoft Copilot Chat et découvrez la formation adaptée à vos besoins.',
 };
 

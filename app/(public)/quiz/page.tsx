@@ -17,7 +17,7 @@ const schema = z.object({
   lastName: z.string().trim().min(1, 'Nom requis').max(100),
   email: z.string().email('Email invalide').max(254, 'Email trop long'),
   site: z.string().trim().min(1, 'Site requis').max(100),
-  pole: z.string().trim().min(1, 'Pôle requis').max(100),
+  pole: z.string().trim().min(1, 'Pôle ou direction requis').max(100),
   service: z.string().trim().min(1, 'Service requis').max(100),
   trainingFormat: z.enum(['presentiel', 'distanciel', 'indifferent'], {
     error: 'Veuillez choisir un format',
@@ -196,18 +196,18 @@ export default function QuizPage() {
 
           {/* Pôle */}
           <div className="space-y-1">
-            <Label htmlFor="pole">Pôle *</Label>
+            <Label htmlFor="pole">Pôle / Direction *</Label>
             <Input
               id="pole"
               maxLength={100}
-              placeholder="Ex : Pôle Médico-chirurgical, Pôle Mère-Enfant…"
-              aria-label="Pôle"
+              placeholder="Ex : Pôle Médico-chirurgical, Pôle Mère-Enfant, Direction des soins, Direction Générale…"
+              aria-label="Pôle / Direction"
               aria-invalid={!!errors.pole}
               aria-describedby={errors.pole ? 'pole-error' : 'pole-helper'}
               {...register('pole')}
             />
             <p id="pole-helper" className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Le pôle dont dépend votre service.
+              Le pôle ou la direction dont dépend votre service.
             </p>
             {errors.pole && (
               <p id="pole-error" role="alert" className="text-xs" style={{ color: '#EF4444' }}>
